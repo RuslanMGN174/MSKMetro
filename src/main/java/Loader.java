@@ -7,15 +7,15 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Loader {
 
     private static String htmlFile;
-    private static PrintWriter pw;
     private static String newFile = "data/new.csv";
+    private static String lineName;
+    private static String lineNumber;
+    private static Map<String, List<String>> stations = new TreeMap<>();
 
     public static void main(String[] args) {
 //        htmlFile = parseFile("data/MSKMetro_wikipage.html");
@@ -23,7 +23,6 @@ public class Loader {
 
         try {
             Document document = Jsoup.parse(new File(path), "UTF-8");
-            pw = new PrintWriter(newFile);
 
             Element table = document.select("table").get(3);
             Elements rows = table.select("tr");
@@ -33,32 +32,31 @@ public class Loader {
                 Elements cols = row.select("td");
 
                 String lineColor = getLineColor(cols.get(0).attr("style"));
-                String lineName = cols.get(0).child(1).attr("title");
-                String lineNumber = clearLineNumber(cols.get(0).child(0).text());
+                lineName = cols.get(0).child(1).attr("title");
+                lineNumber = clearLineNumber(cols.get(0).child(0).text());
                 String stationName = cols.get(1).child(0).text();
                 List<String> connectionLineNumbers = cols.get(3).children().eachText();
                 List<String> connectionLineStations = cols.get(3).children().eachAttr("title");
 
                 //Список станций на линиях
-                Map<String, String> stations = new HashMap<String, String>() {{
-                    put(stationName, lineNumber);
-                }};
+                if (!stations.containsKey(lineNumber)) {
+                    stations.put(lineNumber, new ArrayList<>());
+                }
+
+                stations.get(lineNumber).add(stationName);
+
+                System.out.println(lineNumber);
 
 //                System.out.println(connectionLineStations);
 //                    System.out.printf("%s %s %s %s %s %s \n", lineNumber, lineName, lineColor, stationName, connectionLineNumbers);
-
-
-//                cols.forEach(attr -> System.out.println(attr
-//                        .children()
-//                        .attr("title")));
             }
+
+//            stations.forEach((k, v) -> System.out.printf("Номер линии %s%nСписок станций%n%s%n", k, v));
 
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     private static String parseFile(String s) {
