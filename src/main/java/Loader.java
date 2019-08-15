@@ -43,7 +43,12 @@ public class Loader {
                     stations.put(lineNumber, new ArrayList<>());
                 }
 
+<<<<<<< HEAD
                 stations.get(lineNumber).add(stationName);
+=======
+//                System.out.println(connectionLineStations);
+//                    System.out.printf("%s %s %s %s %s %s \n", lineNumber, lineName, lineColor, stationName, connectionLineNumbers);
+>>>>>>> 6a5f656ce0349c430267ecf9e2273907a17d6369
 
                 System.out.println(lineNumber);
 
