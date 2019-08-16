@@ -63,6 +63,7 @@ public class Loader {
 
 
                     //Список линий
+                    
                     lines.add("number: " + lineNumber.get(0)
                             + " " + "name: " + lineName
                             + " " + "color: " + lineColor);
