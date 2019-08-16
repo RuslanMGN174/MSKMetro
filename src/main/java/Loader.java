@@ -60,6 +60,7 @@ public class Loader {
 
                 if (!stations.containsKey(lineNumber.get(0))) {
                     stations.put(lineNumber.get(0), new ArrayList<>());
+                    
 
 
                     //Список линий
