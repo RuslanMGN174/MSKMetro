@@ -1,3 +1,7 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,6 +26,8 @@ public class Loader {
     private static List<String> connectionLineStations;
     private static List<String> lines = new ArrayList<>();
     private static List<List<String>> connections = new ArrayList<>();
+
+    private static final JSONArray connectionsJSON = new JSONArray();
 
     public static void main(String[] args) {
 //        htmlFile = parseFile("data/MSKMetro_wikipage.html");
@@ -58,29 +64,54 @@ public class Loader {
 
                 /*----------------Список станций на линиях-----------------------------*/
 
-                if (!stations.containsKey(lineNumber.get(0))) {
-                    stations.put(lineNumber.get(0), new ArrayList<>());
+                String clearLineNumber = clearLineNumber(lineNumber.get(0));
+                if (!stations.containsKey(clearLineNumber)) {
+                    stations.put(clearLineNumber, new ArrayList<>());
 
 
                     //Список линий
 
-                    lines.add("number: " + lineNumber.get(0)
+                    lines.add("number: " + clearLineNumber
                             + " " + "name: " + lineName
                             + " " + "color: " + lineColor);
 
                 }
                 if (lineNumber.size() == 2) {
-                    stations.get(lineNumber.get(0)).add(stationName);
+                    stations.get(clearLineNumber).add(stationName);
                 } else if (lineNumber.size() == 3) {
                     stations.get(lineNumber.get(1)).add(stationName);
-                    stations.get(lineNumber.get(0)).add(stationName);
+                    stations.get(clearLineNumber).add(stationName);
                 }
 
+
+                final JSONArray arr = new JSONArray();
+
+                final JSONObject station1 = new JSONObject();
+                station1.put("line", )
+                station1.put("station")
+
+
             }
+
+
+
+
+            for (int j = 0; j < connectionLineNumbers.size(); j++) {
+                final JSONObject station2 = new JSONObject();
+                station2.put("line", connectionLineNumbers.get(j));
+                station2.put("station", connectionLineStations.get(j));
+            }
+
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
     }
 
     private static String parseFile(String s) {
@@ -97,5 +128,9 @@ public class Loader {
     private static String getLineColor(String text) {
         int first = text.indexOf("#");
         return text.substring(first, first + 6);
+    }
+
+    private static String clearLineNumber(String number) {
+        return number.length() == 4 ? number.substring(1) : number;
     }
 }
