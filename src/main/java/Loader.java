@@ -28,6 +28,7 @@ public class Loader {
     private static List<List<String>> connections = new ArrayList<>();
 
     private static final JSONArray connectionsJSON = new JSONArray();
+    private static final JSONArray linesJSON = new JSONArray();
 
     public static void main(String[] args) {
 //        htmlFile = parseFile("data/MSKMetro_wikipage.html");
@@ -68,12 +69,18 @@ public class Loader {
                 if (!stations.containsKey(clearLineNumber)) {
                     stations.put(clearLineNumber, new ArrayList<>());
 
-
                     //Список линий
-
                     lines.add("number: " + clearLineNumber
                             + " " + "name: " + lineName
                             + " " + "color: " + lineColor);
+
+                    //Список линий JSON
+                    JSONObject lines = new JSONObject();
+                    lines.put("number", clearLineNumber);
+                    lines.put("name", lineName);
+                    lines.put("color", lineColor);
+
+                    linesJSON.add(lines);
 
                 }
                 if (lineNumber.size() == 2) {
@@ -84,33 +91,51 @@ public class Loader {
                 }
 
 
-                final JSONArray arr = new JSONArray();
-
-                final JSONObject station1 = new JSONObject();
-                station1.put("line", )
-                station1.put("station")
 
 
+
+                /*----------------Список переходов на другие станции JSON--------------------*/
+                if (connectionLineNumbers.size() != 0) {
+                    JSONArray array = new JSONArray();
+                    JSONObject object = new JSONObject();
+                    object.put("line", lineNumber.get(0));
+                    object.put("station", stationName);
+                    array.add(object);
+
+                    for (int j = 0; j < connectionLineNumbers.size(); j++) {
+                        final JSONObject station2 = new JSONObject();
+                        station2.put("line", connectionLineNumbers.get(j));
+                        station2.put("station", connectionLineStations.get(j));
+                        array.add(station2);
+                    }
+                    connectionsJSON.add(array);
+                }
             }
-
-
-
-
-            for (int j = 0; j < connectionLineNumbers.size(); j++) {
-                final JSONObject station2 = new JSONObject();
-                station2.put("line", connectionLineNumbers.get(j));
-                station2.put("station", connectionLineStations.get(j));
-            }
-
-
 
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        JSONObject stationsJSON = new JSONObject(stations);
+
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String conn = gson.toJson(connectionsJSON);
+        String lin = gson.toJson(linesJSON);
+        String sta = gson.toJson(stationsJSON);
+
+        JSONObject allMetroElements = new JSONObject();
+        allMetroElements.put("stations", stationsJSON);
+        allMetroElements.put("connections", connectionsJSON);
+        allMetroElements.put("lines", linesJSON);
+
+        String all = gson.toJson(allMetroElements);
+
+
+        System.out.println(all);
+
+
 
     }
 
