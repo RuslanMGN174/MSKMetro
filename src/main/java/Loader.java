@@ -2,6 +2,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,6 +10,8 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,9 +20,10 @@ import java.util.TreeMap;
 public class Loader {
 
     private static Map<String, List<String>> stations = new TreeMap<>();
-
     private static final JSONArray connectionsJSON = new JSONArray();
     private static final JSONArray linesJSON = new JSONArray();
+    private static String dataFile = "data/MSKMetro.json";
+
 
     public static void main(String[] args) {
         String path = "data/MSKMetro_wikipage.html";
@@ -33,12 +37,16 @@ public class Loader {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String metroStationsGson = gson.toJson(metroStations);
 
-            PrintWriter pw = new PrintWriter("data/MSKMetro.json");
-
+            PrintWriter pw = new PrintWriter(dataFile);
             pw.println(metroStationsGson);
-
             pw.flush();
             pw.close();
+
+            JSONParser parser = new JSONParser();
+            JSONObject jsonData = (JSONObject) parser.parse(getJsonFile());
+
+            JSONObject stationsObject = (JSONObject) jsonData.get("stations");
+            parseStations(stationsObject);
 
 
         } catch (Exception e) {
@@ -101,6 +109,7 @@ public class Loader {
             }
         }
 
+
         JSONObject stationsJSON = new JSONObject(stations);
 
         JSONObject allMetroElements = new JSONObject();
@@ -118,5 +127,26 @@ public class Loader {
 
     private static String clearLineNumber(String number) {
         return number.length() == 4 ? number.substring(1) : number;
+    }
+
+    private static String getJsonFile() {
+        StringBuilder builder = new StringBuilder();
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(dataFile));
+            lines.forEach(builder::append);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return builder.toString();
+    }
+
+    private static void parseStations(JSONObject stationsObject) {
+
+        stationsObject.keySet().forEach(lineNumberObject ->
+        {
+            String lineNumber = (String) lineNumberObject;
+            JSONArray stationsArray = (JSONArray) stationsObject.get(lineNumberObject);
+            System.out.printf("Линия - %s, количество станций - %s%n", lineNumber, stationsArray.size());
+        });
     }
 }
