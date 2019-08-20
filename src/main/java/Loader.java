@@ -108,14 +108,8 @@ public class Loader {
             }
         }
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String metroStationsGson = gson.toJson(connectionsJSON);
-        System.out.println(metroStationsGson);
-
-        JSONObject stationsJSON = new JSONObject(stations);
-
         JSONObject allMetroElements = new JSONObject();
-        allMetroElements.put("stations", stationsJSON);
+        allMetroElements.put("stations", stations);
         allMetroElements.put("connections", connectionsJSON);
         allMetroElements.put("lines", linesJSON);
 
