@@ -30,7 +30,6 @@ public class Loader {
 
         try {
             Document document = Jsoup.parse(new File(path), "UTF-8");
-            parseFile(document.select("table").get(3));
 
             JSONObject metroStations = parseFile(document.select("table").get(3));
 
@@ -109,6 +108,9 @@ public class Loader {
             }
         }
 
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String metroStationsGson = gson.toJson(connectionsJSON);
+        System.out.println(metroStationsGson);
 
         JSONObject stationsJSON = new JSONObject(stations);
 
@@ -122,7 +124,7 @@ public class Loader {
 
     private static String getLineColor(String text) {
         int first = text.indexOf("#");
-        return text.substring(first, first + 6);
+        return text.substring(first, first + 7);
     }
 
     private static String clearLineNumber(String number) {
