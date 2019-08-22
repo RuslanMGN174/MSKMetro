@@ -24,34 +24,31 @@ public class Loader {
     private static final JSONArray linesJSON = new JSONArray();
     private static String dataFile = "data/MSKMetro.json";
 
-
     public static void main(String[] args) {
         String path = "data/MSKMetro_wikipage.html";
 
         try {
             Document document = Jsoup.parse(new File(path), "UTF-8");
-
             JSONObject metroStations = parseFile(document.select("table").get(3));
 
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String metroStationsGson = gson.toJson(metroStations);
-
+			
+            /*----------------Вывод в .json-----------------------------*/
             PrintWriter pw = new PrintWriter(dataFile);
             pw.println(metroStationsGson);
             pw.flush();
             pw.close();
 
+            /*----------------Печать линий и количества станций-----------------------------*/
             JSONParser parser = new JSONParser();
             JSONObject jsonData = (JSONObject) parser.parse(getJsonFile());
-
             JSONObject stationsObject = (JSONObject) jsonData.get("stations");
-            parseStations(stationsObject);
-
+            printStationCounts(stationsObject);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private static JSONObject parseFile(Element element) {
@@ -67,7 +64,6 @@ public class Loader {
             String stationName = cols.get(1).text();
             List<String> connectionLineNumbers = cols.get(3).children().eachText();
             List<String> connectionLineStations = cols.get(3).children().eachAttr("title");
-
 
             /*----------------Список станций на линиях-----------------------------*/
             String clearLineNumber = clearLineNumber(lineNumber.get(0));
@@ -116,15 +112,18 @@ public class Loader {
         return allMetroElements;
     }
 
+	//Получаем цвет линии
     private static String getLineColor(String text) {
         int first = text.indexOf("#");
         return text.substring(first, first + 7);
     }
 
+	//Приводим номер линии 011А к виду 11А
     private static String clearLineNumber(String number) {
         return number.length() == 4 ? number.substring(1) : number;
     }
 
+	//Парсинг .json
     private static String getJsonFile() {
         StringBuilder builder = new StringBuilder();
         try {
@@ -136,10 +135,9 @@ public class Loader {
         return builder.toString();
     }
 
-    private static void parseStations(JSONObject stationsObject) {
-
-        stationsObject.keySet().forEach(lineNumberObject ->
-        {
+	//Метод для печати линий и количества станций
+    private static void printStationCounts(JSONObject stationsObject) {
+        stationsObject.keySet().forEach(lineNumberObject -> {
             String lineNumber = (String) lineNumberObject;
             JSONArray stationsArray = (JSONArray) stationsObject.get(lineNumberObject);
             System.out.printf("Линия - %s, количество станций - %s%n", lineNumber, stationsArray.size());
