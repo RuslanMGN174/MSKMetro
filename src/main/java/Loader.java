@@ -58,12 +58,13 @@ public class Loader {
             Element row = rows.get(i);
             Elements cols = row.select("td");
 
-            String lineColor = getLineColor(cols.get(0).attr("style"));
-            String lineName = cols.get(0).child(1).attr("title");
-            List<String> lineNumber = cols.get(0).children().eachText();
             String stationName = cols.get(1).text();
+            String lineName = cols.get(0).child(1).attr("title");
+            String lineColor = getLineColor(cols.get(0).attr("style"));
+            List<String> lineNumber = cols.get(0).children().eachText();
             List<String> connectionLineNumbers = cols.get(3).children().eachText();
             List<String> connectionLineStations = cols.get(3).children().eachAttr("title");
+
 
             /*----------------Список станций на линиях-----------------------------*/
             String clearLineNumber = clearLineNumber(lineNumber.get(0));
