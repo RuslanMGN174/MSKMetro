@@ -1,5 +1,4 @@
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -30,21 +29,23 @@ public class Loader {
         try {
             Document document = Jsoup.parse(new File(path), "UTF-8");
             JSONObject metroStations = parseFile(document.select("table").get(3));
-
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String metroStationsGson = gson.toJson(metroStations);
 			
             /*----------------Вывод в .json-----------------------------*/
-            PrintWriter pw = new PrintWriter(dataFile);
-            pw.println(metroStationsGson);
-            pw.flush();
-            pw.close();
+//            PrintWriter pw = new PrintWriter(dataFile);
+//            pw.println(metroStationsGson);
+//            pw.flush();
+//            pw.close();
 
             /*----------------Печать линий и количества станций-----------------------------*/
-            JSONParser parser = new JSONParser();
-            JSONObject jsonData = (JSONObject) parser.parse(getJsonFile());
-            JSONObject stationsObject = (JSONObject) jsonData.get("stations");
-            printStationCounts(stationsObject);
+            JsonElement root = new JsonParser().parse(getJsonFile());
+            JsonElement stationsElement = root.getAsJsonObject().get("stations");
+
+//            JSONParser parser = new JSONParser();
+//            JSONObject jsonData = (JSONObject) parser.parse(getJsonFile());
+//            JSONObject stationsObject = (JSONObject) jsonData.get("stations");
+            printStationCounts(stationsElement);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,12 +59,12 @@ public class Loader {
             Element row = rows.get(i);
             Elements cols = row.select("td");
 
-            String lineColor = getLineColor(cols.get(0).attr("style"));
-            String lineName = cols.get(0).child(1).attr("title");
-            List<String> lineNumber = cols.get(0).children().eachText();
-            String stationName = cols.get(1).text();
-            List<String> connectionLineNumbers = cols.get(3).children().eachText();
-            List<String> connectionLineStations = cols.get(3).children().eachAttr("title");
+            String stationName = cols.get(1).text(); 										// названия станций
+            String lineName = cols.get(0).child(1).attr("title"); 							// названия линий
+            String lineColor = getLineColor(cols.get(0).attr("style")); 					// цвета линий
+            List<String> lineNumber = cols.get(0).children().eachText(); 					// номера линий
+            List<String> connectionLineNumbers = cols.get(3).children().eachText(); 		// соединения номеров
+            List<String> connectionLineStations = cols.get(3).children().eachAttr("title"); // соединения станций
 
             /*----------------Список станций на линиях-----------------------------*/
             String clearLineNumber = clearLineNumber(lineNumber.get(0));
@@ -123,7 +124,7 @@ public class Loader {
         return number.length() == 4 ? number.substring(1) : number;
     }
 
-	//Парсинг .json
+	//Парсинг .json файла
     private static String getJsonFile() {
         StringBuilder builder = new StringBuilder();
         try {
@@ -136,11 +137,15 @@ public class Loader {
     }
 
 	//Метод для печати линий и количества станций
-    private static void printStationCounts(JSONObject stationsObject) {
-        stationsObject.keySet().forEach(lineNumberObject -> {
-            String lineNumber = (String) lineNumberObject;
-            JSONArray stationsArray = (JSONArray) stationsObject.get(lineNumberObject);
-            System.out.printf("Линия - %s, количество станций - %s%n", lineNumber, stationsArray.size());
+    private static void printStationCounts(JsonElement stationsElement) {
+        stationsElement.getAsJsonObject().keySet().forEach(lineNumberObject -> {
+            JsonArray stationsArray = (JsonArray) stationsElement.getAsJsonObject().get(lineNumberObject);
+            System.out.printf("Линия - %s, количество станций - %s%n", lineNumberObject, stationsArray.size());
         });
+
+//        stationsObject.keySet().forEach(lineNumberObject -> {
+//            JSONArray stationsArray = (JSONArray) stationsObject.get(lineNumberObject);
+//            System.out.printf("Линия - %s, количество станций - %s%n", lineNumberObject, stationsArray.size());
+//        });
     }
 }
