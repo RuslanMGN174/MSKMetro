@@ -41,10 +41,6 @@ public class Loader {
             /*----------------Печать линий и количества станций-----------------------------*/
             JsonElement root = new JsonParser().parse(getJsonFile());
             JsonElement stationsElement = root.getAsJsonObject().get("stations");
-
-//            JSONParser parser = new JSONParser();
-//            JSONObject jsonData = (JSONObject) parser.parse(getJsonFile());
-//            JSONObject stationsObject = (JSONObject) jsonData.get("stations");
             printStationCounts(stationsElement);
 
         } catch (Exception e) {
@@ -142,10 +138,5 @@ public class Loader {
             JsonArray stationsArray = (JsonArray) stationsElement.getAsJsonObject().get(lineNumberObject);
             System.out.printf("Линия - %s, количество станций - %s%n", lineNumberObject, stationsArray.size());
         });
-
-//        stationsObject.keySet().forEach(lineNumberObject -> {
-//            JSONArray stationsArray = (JSONArray) stationsObject.get(lineNumberObject);
-//            System.out.printf("Линия - %s, количество станций - %s%n", lineNumberObject, stationsArray.size());
-//        });
     }
 }
