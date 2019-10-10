@@ -54,11 +54,11 @@ public class Loader {
             Element row = rows.get(i);
             Elements cols = row.select("td");
 
-            String stationName = cols.get(1).text();                                                  // названия станций
+            String stationName = cols.get(1).text();                                        // названия станций
             String lineName = cols.get(0).child(1).attr("title");                           // названия линий
             String lineColor = getLineColor(cols.get(0).attr("style"));                     // цвета линий
-            List<String> lineNumber = cols.get(0).children().eachText();                              // номера линий
-            List<String> connectionLineNumbers = cols.get(3).children().eachText();                   // соединения номеров
+            List<String> lineNumber = cols.get(0).children().eachText();                    // номера линий
+            List<String> connectionLineNumbers = cols.get(3).children().eachText();         // соединения номеров
             List<String> connectionLineStations = cols.get(3).children().eachAttr("title"); // соединения станций
 
             /*----------------Список станций на линиях-----------------------------*/
