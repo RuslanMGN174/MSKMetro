@@ -1,7 +1,6 @@
 import com.google.gson.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -31,12 +30,12 @@ public class Loader {
             JSONObject metroStations = parseFile(document.select("table").get(3));
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String metroStationsGson = gson.toJson(metroStations);
-			
+
             /*----------------Вывод в .json-----------------------------*/
-//            PrintWriter pw = new PrintWriter(dataFile);
-//            pw.println(metroStationsGson);
-//            pw.flush();
-//            pw.close();
+            PrintWriter pw = new PrintWriter(dataFile);
+            pw.println(metroStationsGson);
+            pw.flush();
+            pw.close();
 
             /*----------------Печать линий и количества станций-----------------------------*/
             JsonElement root = new JsonParser().parse(getJsonFile());
@@ -55,11 +54,11 @@ public class Loader {
             Element row = rows.get(i);
             Elements cols = row.select("td");
 
-            String stationName = cols.get(1).text(); 										// названия станций
-            String lineName = cols.get(0).child(1).attr("title"); 							// названия линий
-            String lineColor = getLineColor(cols.get(0).attr("style")); 					// цвета линий
-            List<String> lineNumber = cols.get(0).children().eachText(); 					// номера линий
-            List<String> connectionLineNumbers = cols.get(3).children().eachText(); 		// соединения номеров
+            String stationName = cols.get(1).text();                                                  // названия станций
+            String lineName = cols.get(0).child(1).attr("title");                           // названия линий
+            String lineColor = getLineColor(cols.get(0).attr("style"));                     // цвета линий
+            List<String> lineNumber = cols.get(0).children().eachText();                              // номера линий
+            List<String> connectionLineNumbers = cols.get(3).children().eachText();                   // соединения номеров
             List<String> connectionLineStations = cols.get(3).children().eachAttr("title"); // соединения станций
 
             /*----------------Список станций на линиях-----------------------------*/
@@ -109,18 +108,18 @@ public class Loader {
         return allMetroElements;
     }
 
-	//Получаем цвет линии
+    //Получаем цвет линии
     private static String getLineColor(String text) {
         int first = text.indexOf("#");
         return text.substring(first, first + 7);
     }
 
-	//Приводим номер линии 011А к виду 11А
+    //Приводим номер линии 011А к виду 11А
     private static String clearLineNumber(String number) {
         return number.length() == 4 ? number.substring(1) : number;
     }
 
-	//Парсинг .json файла
+    //Парсинг .json файла
     private static String getJsonFile() {
         StringBuilder builder = new StringBuilder();
         try {
@@ -132,7 +131,7 @@ public class Loader {
         return builder.toString();
     }
 
-	//Метод для печати линий и количества станций
+    //Метод для печати линий и количества станций
     private static void printStationCounts(JsonElement stationsElement) {
         stationsElement.getAsJsonObject().keySet().forEach(lineNumberObject -> {
             JsonArray stationsArray = (JsonArray) stationsElement.getAsJsonObject().get(lineNumberObject);
